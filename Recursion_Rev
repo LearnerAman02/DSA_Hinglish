@@ -1,0 +1,478 @@
+import java.util.*;
+
+public class Revision {
+    // Recursion --> Function calling itself again and again
+    // When to use --> Jab ek hi function ka use karke hum apne desired operation ko perform kar sakte hai 
+    // Eg. Aapko 10000 times Hello World print karna hai and same function ka hi use karke bina kisi extra function ko use kiye
+    // NOTE --> Things which we can do using recursion can be done using ITERATION as well and VICE VERSA but situation pe depend krta hai
+    // In recursion S.C.(Space Complexity) is not constant because of recursive calls
+
+    // ---------------- BASIC SYNTAX ----------------------
+    // recursive function(arguments){
+    //     (base condition){return logic}
+    //     logic which has to be performed in each recursive call
+    //     make call to recursive function(modified arguments)
+    //}
+
+    // ---------------- What happens during execution ----------------------
+    // Jab call lagti hai har baar to function in recursion har baar memory allocation hota hai into the stack
+    // and jab base case hit hota hai sabse last called function gets popped out from the stack and than jitne bhi called functions the
+    // unko jab call kiya gaya tha kuchh set of lines execute hoke another function call ho gaya tha toh jab ab memory pop out 
+    // hogi from the stack toh phir jo remaining set of lines execute hona baaki the woh ab execute honge
+    // Ek example code se samajhte hai 
+    public static void printNum(int num){
+        if(num==1){
+            System.out.println(num);
+            return;
+        }
+
+        System.out.println("Stack mein memory push ho rahi hai : "+num);//a1
+        // a2
+        // a3
+        // ye a1,a2,a3 lines execute honge and than agle call ka function will be pushed into the stack memory
+        printNum(num-1);
+        // niche ki lines L1,L2,L3 execute hona start hongi jab iske upar wala function pop out ho jaayega
+        System.out.println("Stack se memory popped ho rahi hai : "+num);// -->L1
+        // L2
+        // L3
+        // once ye upar ke line puri tarah execute ho jaayengi than ye wala function bhi pop out ho jaayega
+    }
+
+    // --------- Be Careful while Argument passing ------------
+    // Iss code example se samajhte hai
+    // print numbers from 1 - 5
+
+    // ------------------ BASIC QUESTIONS ------------------
+    // Use pen and paper to dry run the recursive code
+    // Har ek question ka first Try to draw recursive tree and than code(Usse logic building gets little easy)
+    // Note ---> Also recursive tree banane se we will come to know ki har ek level pe same number of recursive calls lagengi yaa phir
+    // It will reamin the same at each level
+
+
+    // Q.1 Fibonacci number [0,1,1,2,3,5,8,13,21,.....]                         (f(n)=f(n-1)+f(n-2))
+    // fibonacci series mein current number last 2 numbers ka sum hota hai hai. Eg.(8 = 5+3)
+    // base case socho ---> jab 0th term and first term honge sirf series woh hamare base case banenge kyunki unn dono starting terms ke help se hi hum poori series create kar paayenge
+    // code
+    public static int fibo(int n){
+        if(n==0) return 0;
+        if(n==1) return 1;
+        int ans = fibo(n-1)+fibo(n-2); // iss answer variable mein hi saare recursive calls lagake answers laaye jaa rahe hai aur store kiye jaa rahe hai
+        // draw recursive tree of above recurrence relation for clear understanding
+        //                  fibo(5)
+        //                  /    \
+        //            fibo(4)   fibo(3)
+        //            /    \       /   \
+        //      fibo(3) fibo(2) fibo(2) fibo(1)
+        //     /  \      /   \   /   \    
+    // fibo(2) fibo(1) fibo(3) ..... baaki samajhdaar ho yaar
+
+    // yaha ye bhi samajhlo ki DP kyu use karte hai 
+    // dekho fibo(3),fibo(2) left side se calculate hoke milega but phir se hume right side bhi calculate karna padega isko hum OVERLAPPING SUB PROBLEMS kehte hai
+    // phir hume same calculation/computation ko baar baar karna pad raha hai jisse Time and space bhi jyada jaa raha hai
+    // toh DYNAMIC PROGRAMMING ke help se hum log answers ko store karte jaate hai to prevent irrelevant further computation i.e.(MEMOIZATION)
+        return ans; 
+    }
+    static void printing(int n){
+        if(n<6){
+            System.out.println(n);
+            printing(++n);
+            //printing(n++); ---> Ye wrong way hai kyunki value pehle pass hogi than increment hogi and same cheez further recursive calls
+            // ke liye bhi hogi jisse infinite recursive calls lagenge (Memory limit exceeded)
+        }
+    }
+
+    // Q.2 Binary search using recursion
+    // base case ---> Jab hamara target key mil jaayega 
+    // ab arguments kaise decide karenge --- dekhiye hamare paas start index(si) aur end index(ei) hota hai jiske help se hum hamare search space ko kam karke searching perform karte hai
+    // toh isiliye hum usika use karenge kyunki further recursive call pe hume apne search space ko kam karte jaana hai to reach our answer
+    // ise hum DIVIDE AND CONQUER strategy kehte hai                                                     si      mid         ei
+    // first pura array hoga of size(n), after that next recursive call mein (si,mid-1) || (mid+1,ei)   [41,32,30,21,15,12,6,3] target = 12 {level - 1}
+    //  si mid  ei
+    // [15,12,6,3] {level - 2}
+    // toh humne n --> n/2 pe lekar aa gaye apne problem ko means ek bade problem ko chhote pblm mein break down kar diya
+    // isiliye we say say that recursion is used break bigger pblms into smaller pblms (because smaller pblms are easy to solve)
+    // code
+    public static int bs(int [] arr,int si,int ei,int target){
+        if(si>ei){
+            return -1;
+        }
+        int mid = si+(ei-si)/2;
+        if(arr[mid]==target){
+            return mid;
+        }
+        if(arr[mid]<target){
+            return bs(arr,mid+1,ei,target);
+        }
+        return bs(arr,si,mid-1,target);
+    }
+    // Jab bhi function ka kuchh return type ho must use "RETURN" keyword yaa phir store karo answer ko in same data type jo return type hai and finally return that variable
+
+    // Q.3 Sum of digits / Product of digits in a number
+    //Thought process 
+    // base case mein jab last digit bachega uss digit ko hum return kar denge 
+    // agle recursive call ke liye hum last digit ko extract kar lenge for addition/multiplication and next recursive call mein argument number/10 ko pass karenge
+    public static int sumDigits(int num){
+        if(num%10==num){
+            return num;
+        }
+        int ans = num%10+sumDigits(num/10); // saare recursive calls se aane wale answers ans variable mein store honge and than it will be returned
+        return ans;
+        // multilplcation / product of digits ans = n%10 + product(n/10)
+    }
+
+    // Q.4 similarly isse bhi jyada easy hai product and sum of n numbers
+    // for productN(5) = 5*productN(4) ---> 4*productN(3) ---> 3*productN(2) ---> 2*productN(1) {recursive tree}
+    // productN(5) ye expect karta hai ki productN(4) mujhe (4 to 1) ka product laake de dega and simply I will multiply 5 in it for the final answer
+    // aise productN(4) expect karta hai from productN(3) and so on.....
+    public static int productN(int n){
+        if(n==1){
+            return 1;
+        }
+        int product = n*productN(n-1);
+        return product;
+    }
+
+    // Q.5 Reverse a number using recursion
+    // we have two methods over here
+    // M-1 main last digit ko extract kar loon aur multiply by 10 than woh unit se tens pe jaayega than tens se hundered and so on...
+    // finally we will get reversed number
+    // RECURSION TREE
+    //    reverse1(761) --> sum = sum*10 + rem(1),{call}reverse(76) ---> 10 +rem(6),{call}reverse(7) --> 16*10+rem(7){base case}
+    static int sumR=0;
+    public static void reverse1(int n){
+        if(n%10==0){
+            return;
+        }
+        int rem = n%10;
+        sumR = sumR*10+rem; // sumR (reverse sum)
+        reverse1(n/10);
+    }
+    // M-2 we can also do reverse using power method
+    // remainder ko extract karo and multiply it with Math.pow(10,n) jaha n ki value will be decremented after every recursive call
+    //code
+    public static int reverse2(int n,int power){
+        if(n%10==n){
+            return n;
+        }
+        int rem = n%10;
+        int ans = rem*(int)(Math.pow(10,power))+reverse2(n/10, power-1);
+        return ans;
+    }
+
+    // Q.6 Count number of zeroes
+    // Thought process
+    // argument mein count variable lenge jo ki har ek function call mein pass hoga to store number of zeroes ka count
+    // base case --> jab finally single digit will remain, hum check karenge ki woh single digit 0 h?? if yes count = count +1 and return else simply return count
+    // code
+    public static int countZero(int n,int count){
+        if(n%10==n){
+            if(n==0) count = count+1;
+            return count;
+        }
+        if(n%10==0){
+            return countZero(n/10, count+1);
+        }else{
+            return countZero(n/10, count);
+        }
+    } 
+
+    // Same concept pe we have one leetcode ka question
+    // link --> https://leetcode.com/problems/number-of-steps-to-reduce-a-number-to-zero/description/
+
+    // Q.7 isSorted Array
+    // Thought process
+    // idx ko as an argument pass karenge to iterate over every element
+    // base case ---> agar idx == array ka length -1, iska matlab array sorted hai return true
+    //agar a[idx] ki value is less than a[idx+1] toh true return kro nhi toh false {ascending order array hai}
+    // and agle recursive call ko AND operator ka use karke call karenge kyunki jo agle function calls hai usse true aa sakta h but ek bhi baar hamari condition false hui 
+    // means woh sorted array nhi hai toh isiliye we will have to use AND OPERATOR
+    public static boolean isSorted(int [] arr,int idx){
+        if(idx==arr.length-1){
+             return true;
+        }else{
+            return arr[idx]<=arr[idx+1] && isSorted(arr, idx+1);
+        }
+    }
+
+    // Q.8 linear search using recursion
+    // same approach --> idx ki help se traverse karenge array ko 
+    // base case --> If index ki value == arr.length ho gayi means humne pure array mein search kar liya now return FALSE
+    // yaha par agle call ke saath OR OPERATOR use karenge because kisi ek index par woh present hai toh woh index ke corresponding jo function call was made it will return true
+    // so remaining calls se bhi true return hona chahiye isiliye
+    public static boolean linearS(int [] arr,int idx,int target){
+        if(idx==arr.length){
+            return false;
+        }else{
+            return arr[idx]==target || linearS(arr, idx+1, target);
+        }
+    }
+
+    // Q.9 find multiple occurence of an element in an array
+    // One important note 
+    // when we define the function as func(int a,String b) -- a,b are called parameters jab hum function (func) ko define karte hai
+    // aur jab values pass hoti hai har ek function call ke liye use we call as arguments
+    // EG. main function{
+        // x = 3, y = "aman"
+    //   func(x,y); ---- yaha par x and y are arguments
+    //}
+    // func(int a,String b){logic to be executed in function} // a and b are parameters
+    // ------------------- IMPORTANT ------------------
+    // CASE - 1  ArrayList ko arguments ke tarah pass karo
+    // iss case pata h kya hoga?? :) :)
+    // har ek jo function call hoga naa woh each function will point to the OG list passed as an argument and kisi bhi function ke dwara if it is changed than change occurs for each function
+    //    list ----->[2,4,5]
+    //               /  |   \
+    //          func1 func2 func3 (yaha 3 functions same list ko point kar arhe which has been passed as an argument in each function so agar func1 change karta hai list ko toh change will occur for func2 and func3 as well)
+    
+    public static void multipleOcc(int [] arr,int idx,int target,ArrayList<Integer> list){
+        if(idx==arr.length){
+            return;
+        }
+        if(arr[idx]==target){
+            list.add(idx);
+            multipleOcc(arr, idx+1, target, list);
+        }else{
+            multipleOcc(arr, idx+1, target, list);
+        }
+    }
+
+    // yaa toh har ek function call ke andar array list ko create karo and return karo 
+    // yaha par har ek function ka khud ka arraylist hoga means func1 ka change kisi bhi tarah se impace nhi create karega on func2,func3 ke list par
+    // yaha par arraylist bolenge returned function call ko ki bhai mere andar bhi ek index ki value hai please mujhe bhi apne saath le chal
+    // *************Please make its Recursion flow diagram for much better understanding**************
+    public static ArrayList<Integer> multipleOcc2(int [] arr,int idx,int target){
+        if(idx==arr.length){
+            ArrayList<Integer> list = new ArrayList<>();
+            return list;
+        }
+        ArrayList<Integer> list1 = new ArrayList<>();
+        // har ek level pe srraylist return hoga toh isiliye mujhe usko ek arraylist mein add karte jana hoga while returning 
+        if(arr[idx]==target){
+            list1.add(idx);
+            list1.addAll(multipleOcc2(arr, idx+1, target)); // toh ye kya kar raha hai ki jitne bhi calls se values aa rahi hai apne andar append karte jaa raha hai
+            // yaha par call kaise lagegi actually
+            // list1 --> [currindexans + agle call se aane wale answers]
+        }else{
+            list1.addAll(multipleOcc2(arr, idx+1, target)); // same
+        }
+        return list1;
+    }
+
+    // Q. CATEGORY QUESTION
+    // processed and unprocessed (used in subset,subsequence,permutation,keypad combination generation)
+    // processed and unprocessed approach
+    // ye approach becomes relatively easy to code once we draw the recursion tree
+
+
+    //  ------------------- Type -1 -----------------------------
+    // remove a target character from a string and return a new string that does not contain that character
+    // Eg. remove character 'b' from word "bablubhaiya"
+
+    // Thought process through recursion tree
+    //    processed(p)/unprocessed(up) (initially p=""/up="bablubhaiya") {target character = 'b'}
+    //    ""/"bablubhaiya" ---> ""/"ablubhaiya" ---> "a"/"blubhaiya" ---> "a"/"lubhaiya"  ---> "al"/"ubhaiya" ---> "alu"/"bhaiya" ---> "alu"/"haiya" ---> "aluh"/"aiya" ---> "aluha"/"iya" ---> "aluhai"/"ya" ---> "aluhaiy"/"a" ---> "aluhaiya"/"" ---> bass kar kitna aage jaayega bhai,ye BASE CASE hai :))
+    //     Understanding how the recursion flow works
+    // agar aap dhyaan se dekhe  toh what we are doing at each recursive call is :
+    // hum up string se first character utha rahe hai and we are checking ki woh char 'b' toh nhi hai
+    // if(its is b) do not concatenate it with processed string
+    // else concatenate it with processed string
+    // now let's code same thing
+
+    public static void removeChar(String p,String up){
+        if(up.isEmpty()){
+            System.out.println(p);
+            return;
+        }
+        // extracting the character
+        char ch = up.charAt(0);
+        // check kar gabru di boli check kar :))
+        // haanji check kariye is this our target character
+        if(ch=='b'){
+            removeChar(p, up.substring(1));
+        }else{
+            removeChar(p+ch, up.substring(1));
+        }
+    }
+
+    // Now question is remove "baba"{grandfather} without removing "bablu" from string "bablubhaiyarespectedbabaeverywhere"
+    // iske liye hum ek inbuilt string ke function ka use karenge which is "startsWith" {this function will compare things starting character by character}
+    // Recursion tree is easy bas jab "baba" start mein occur karega in up string toh utna part will not be appended in processed(p) string
+    // now let's code
+    public static void removeString(String p,String up){
+        if(up.isEmpty()){
+            System.out.println(p);
+            return;
+        }
+        char ch = up.charAt(0);
+        if(up.startsWith("baba")){
+            removeString(p, up.substring(4)); // NOTE - here up.substring(length of deleted string) hogi kyunki utna part skip krna hai
+        }else{
+            removeString(p+ch, up.substring(1));
+        }
+    }
+
+    // ------------------ TYPE-2 --------------------------
+    // ----------------- SUBSET,SUBSEQUENCE ---------------------
+    // first let's understand what is subsequence? (A string that is obtained by deleting all or some characters from the OG String)
+    // same goes for subset in case of integers
+    // for n length ka string OR n numbers of elements in an array
+    // We have 2^n subsets/subsequences
+    // Eg. subsets/subsequence of "abc" --> ["","a","b","c","ab","ac","bc","abc"]
+
+    // Now recursion tree for generating above subsequences for "abc"
+    // Ek baar first character ko we will pick and ek baar we will not pick
+    //                        ""/"abc"
+    //                     /            \
+    //                 ""/"bc"            "a"/"bc"
+    //               /     \            /         \
+    //         ""/"c"   "b"/"c"        "a"/"c"      "ab"/"c"
+    //        /     \    /    \         /    \       /      \
+    //  ""/""  "c"/"" "b"/"" "bc"/"" "a"/"" "ac"/"" "ab"/"" "abc"/"" ----> {ye dekho iss level pe saare subsequences has been generated}
+    //   base case is when unprocessed string becomes empty
+    // Now let's code the same thing
+    // 1--> printing all
+    public static void subset(String p,String up){
+        if(up.isEmpty()){
+            System.out.println(p);
+            return;
+        }
+        char ch = up.charAt(0);
+        subset(p, up.substring(1)); // we are not picking the first character
+        subset(p+ch, up.substring(1));// we are picking the first character
+    }
+
+    // 2--> store in list by passing list as an argument
+    // base case mein bas ye change hai ki hum rather that printing ek list mein subsets put kar de rahe hai
+    public static void subsetList1(String p,String up,ArrayList<String> list){
+        //ArrayList<String> list1 = new ArrayList<>();
+        if(up.isEmpty()){
+            list.add(p);
+            return;
+        }
+        char ch = up.charAt(0);
+        subsetList1(p, up.substring(1),list); // we are not picking the first character
+        subsetList1(p+ch, up.substring(1),list);// we are picking the first character
+    }
+
+    // 3--> returning list without passing it as an argument
+    public static List<String> subsetList2(String p,String up){
+        //ArrayList<String> list1 = new ArrayList<>();
+        if(up.isEmpty()){
+            List<String> list1 = new ArrayList<>();
+            list1.add(p); //because it is returning list we are creating a list at the base ,adding an element into it and returning this list which will be appended 
+            return list1;
+        }
+        char ch = up.charAt(0);
+        List<String> l1 = subsetList2(p, up.substring(1)); // we are not picking the first character
+        List<String> l2 = subsetList2(p+ch, up.substring(1));// we are picking the first character
+        l1.addAll(l2);
+        return l1;
+    }
+
+    // --------------- IMPORTANT APPROACH ---------------
+    // generate subset for numbers using iteration 
+    // flow diagram
+    //                 [[]]
+    //                /    \
+    //             [[]     [1]]
+    //             /          \
+    //       [ [],[1],         [2],[1,2] ]
+    //          /               \
+    //   [ [],[1],[2],[1,2]      [3],[1,3],[2,3],[1,2,3]]
+    // start mein we will create an outer list with empty list in it
+    // every time we will prepare internal list of size outer list
+    // and than outer list mein first we will copy upar level ka content as it is and that internal ke andar we will add the current element
+    // code
+    public static List<List<Integer>> subsetNum(int []arr){
+        List<List<Integer>> outer = new ArrayList<>();
+        outer.add(new ArrayList<>());
+
+        for(int num : arr){
+            int n = outer.size();
+            for(int i=0;i<n;i++){
+                List<Integer> internal = new ArrayList<>(outer.get(i)); // upper level waale internal lists ko we are taking 
+                internal.add(num); // now putting array element in it
+                outer.add(internal); // adding this new internal list into it
+            }
+        }
+        return outer;
+    }
+
+    // if above concept is clear 
+    // CONGRATULATIONS aapke 2 questions hone waale hai leetcode pe
+    // Q.1 link --> https://leetcode.com/problems/subsets/description/
+    // Q.2 link --> https://leetcode.com/problems/subsets-ii/ {first sort kardo array ko than before adding into outer list just check ki is it present already or not}
+
+    
+    public static void main(String[] args) {
+        printNum(5); // print 5 4 3 2 1 2 3 4 5
+        printing(1); // print 1 - 5
+        int fibonacci = fibo(8);
+        System.out.println("8th Term in fibonacci series is : "+fibonacci);
+
+        // binary search
+        int [] arr = {21,17,15,10,9,5,3};
+        int index = bs(arr,0,arr.length-1,9);
+        System.out.println("Element is at index : "+index);
+
+        // sum of digits in a number(similar approach is for product)
+        int sum = sumDigits(56123);
+        System.out.println("Sum of digits are : "+sum);
+
+        // product of n numbers(similar approach is for sum of n numbers)
+        int p = productN(7);
+        System.out.println("Product of 7 numbers are : "+p);
+
+        // reverse a number
+        reverse1(781);
+        System.out.println(sumR);
+        // method 2
+        int reverseNum = reverse2(234, 2); // parameter mein power number of digits-1 pass hoga 
+        System.out.println(reverseNum);
+
+        // count zeroes
+        int zero = countZero(10023401,0);
+        System.out.println("Number of zeroes are : "+zero);
+
+        // is my array sorted in ascending order??
+        int arr1[] = {1,3,7,9,5,90};
+        System.out.println("Array is Sorted : "+isSorted(arr1, 0));
+
+        // linear Search
+        System.out.println("Element present hai?? : "+linearS(arr1, 0, 32));
+
+        // multiple Occurence
+        // case 1 (passing list as an argument)
+        int arr2[] = {1,3,7,9,5,90,7,34};
+        ArrayList<Integer> list1 = new ArrayList<>();
+        multipleOcc(arr2, 0, 7, list1);
+        System.out.println(list1);
+
+        // case 2 (making list at each call)
+        ArrayList<Integer> listans = multipleOcc2(arr2, 0, 7);
+        System.out.println(listans);
+
+        // TYPE -1 (remove character)
+        removeChar("", "bablubhaiya");
+
+        // (remove substring)
+        removeString("","bablubhaiyarespectedbabaeverywhere");
+
+        // TYPE - 2(generate subsequence)
+        subset("", "abc");
+        // passing list as argument
+        ArrayList<String> subsetL1 = new ArrayList<>();
+        subsetList1("", "abc",subsetL1);
+        // subsetL1 base case tak reach karega and it will add all the subsets in itself and than finally bring the list containing all elements
+        System.out.println(subsetL1);
+
+        // returning list without passing it as an argument
+        List<String> subsetL2 = subsetList2("", "abc");
+        System.out.println(subsetL2);
+
+        // now we will generate subset for numbers using iteration
+        int arr3[] = {4,5,6};
+        List<List<Integer>> subsetsNum = subsetNum(arr3);
+        System.out.println(subsetsNum); 
+    }
+}
