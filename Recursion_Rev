@@ -6,7 +6,7 @@ public class Revision {
     // Eg. Aapko 10000 times Hello World print karna hai and same function ka hi use karke bina kisi extra function ko use kiye
     // NOTE --> Things which we can do using recursion can be done using ITERATION as well and VICE VERSA but situation pe depend krta hai
     // In recursion S.C.(Space Complexity) is not constant because of recursive calls
-
+and during each recursive call memory consumption hota hai and it get pushed into the stack and during backtracking it gets popped out
     // ---------------- BASIC SYNTAX ----------------------
     // recursive function(arguments){
     //     (base condition){return logic}
