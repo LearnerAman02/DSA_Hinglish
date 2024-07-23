@@ -1,5 +1,6 @@
 GRAPH CREATION using Adjacency List
-Time Complexity --> O(V)*O(E)
+Time Complexity --> O(V + E)
+Space Complexity --> O(V + E)
 import java.util.*;
 public class Main
 {
